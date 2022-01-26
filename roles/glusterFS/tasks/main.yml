@@ -1,15 +1,50 @@
 ---
 # tasks file for glusterFS
 
+- name: Add port to firewalld
+  firewalld:
+    port: "{{ item.port }}/{{ item.porto }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+    zone: public
+  with_items:
+    - { port: "24007-24009", porto: "tcp" }
+    - { port: "111", porto: "tcp" }
+    - { port: "139", porto: "tcp" }
+    - { port: "445", porto: "tcp" }
+    - { port: "965", porto: "tcp" }
+    - { port: "2049", porto: "tcp" }
+    - { port: "631", porto: "tcp" }
+    - { port: "38465-38469", porto: "tcp" }
+    - { port: "49152-49251", porto: "tcp" }
+    - { port: "111", porto: "udp" }
+    - { port: "963", porto: "udp" }
+  when: "'gluster-server' in group_names"
+
+
+- name: Add service to firewalld
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+    zone: public
+  with_items:
+    - nfs
+    - samba
+    - samba-client
+  when: "'gluster-server' in group_names"
+
+
+
+
 - name: install package centos-release-gluster
   yum:
     name: "{{ packages }}"
   vars:
     packages:
     - centos-release-gluster
-
-- name: copy glaster repo in all nodes
-  command: sed -e '/enabled/s/0/1/1;/enabled/s/1/0/2' /etc/yum.repos.d/CentOS-Gluster-9.repo
 
 - name: install package glusterfs-server
   yum:
