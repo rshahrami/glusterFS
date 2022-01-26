@@ -1,0 +1,10 @@
+---
+- hosts: gluster-all
+  remote_user: ansible
+  become: true
+  become_method: sudo
+  roles:
+  # - update_all
+  # - java
+  # - hostname
+  - glusterFS

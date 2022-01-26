@@ -1,0 +1,23 @@
+[gluster-all]
+gluster-s1 ansible_user=root new_hostname=gluster-s1
+gluster-s2 ansible_user=root new_hostname=gluster-s2
+gluster-c1 ansible_user=root new_hostname=gluster-c1
+gluster-c2 ansible_user=root new_hostname=gluster-c2
+gluster-c3 ansible_user=root new_hostname=gluster-c3
+gluster-c4 ansible_user=root new_hostname=gluster-c4
+
+
+
+[gluster-server]
+gluster-s1 ansible_user=root new_hostname=gluster-s1
+gluster-s2 ansible_user=root new_hostname=gluster-s2
+
+
+[gluster-client]
+gluster-c1 ansible_user=root new_hostname=gluster-c1
+gluster-c2 ansible_user=root new_hostname=gluster-c2
+gluster-c3 ansible_user=root new_hostname=gluster-c3
+gluster-c4 ansible_user=root new_hostname=gluster-c4
+
+
+

@@ -1,0 +1,20 @@
+---
+# tasks file for hostname
+
+# - name: set hostname and ip to /etc/hosts
+#   shell: |
+#     cat <<EOF | sudo tee -a /etc/hosts
+
+#     192.168.143.41  gluster-s1
+#     192.168.143.42  gluster-s2
+
+#     192.168.143.21  gluster-c1
+#     192.168.143.43  gluster-c2
+#     192.168.143.44  gluster-c3
+#     192.168.143.22  gluster-c4
+#     EOF
+
+- name: update hostname
+  hostname:
+    name: "{{ new_hostname }}"
+

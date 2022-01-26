@@ -1,0 +1,32 @@
+---
+# tasks file for glusterFS
+
+# - name: install package centos-release-gluster
+#   yum:
+#     name: "{{ packages }}"
+#   vars:
+#     packages:
+#     - centos-release-gluster
+
+# - name: copy glaster repo in all nodes
+#   command: sed -e '/enabled/s/0/1/1;/enabled/s/1/0/2' /etc/yum.repos.d/CentOS-Gluster-9.repo
+
+- name: install package glusterfs-server
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - glusterfs-server
+  when: "'gluster-server' in group_names"
+
+
+- name: install package glusterfs-client
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - glusterfs-client
+  when: "'gluster-client' in group_names"
+
+# when: inventory_hostname != 'kuber-master1'
+# "'db_servers' in group_names"
