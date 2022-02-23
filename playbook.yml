@@ -7,4 +7,5 @@
   # - update_all
   # - java
   # - hostname
-  - glusterFS
+  # - glusterFS
+  - heketi

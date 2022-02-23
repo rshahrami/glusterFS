@@ -20,4 +20,5 @@ gluster-c3 ansible_user=root new_hostname=gluster-c3
 gluster-c4 ansible_user=root new_hostname=gluster-c4
 
 
-
+[gluster-heketi]
+gluster-s1 ansible_user=root new_hostname=gluster-s1

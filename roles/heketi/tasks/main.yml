@@ -1,0 +1,110 @@
+---
+# tasks file for heketi
+
+# - name: download heketi binary
+#   local_action:
+#     module: get_url
+#     url: "{{ url_heketi }}"
+#     dest: "{{ role_directory }}"
+
+
+# - name: Unarchive heketi file that is already on the remote machine
+#   unarchive:
+#     src: "{{ role_directory }}/{{ HEKETI_VER }}"
+#     dest: /root
+#     remote_src: no
+#   when: inventory_hostname == 'gluster-s1'
+
+
+
+# - name: Create {/var/lib,/etc,/var/log}/heketi
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#   with_items:
+#     - /var/lib/heketi
+#     - /etc/heketi
+#     - /var/log/heketi
+#   when: inventory_hostname == 'gluster-s1'
+
+
+
+# - name: copy heketi and heketi-cli to /use/local/bin/
+#   copy:
+#     src: "/root/heketi/{{ item.filename }}"
+#     dest: "{{ item.filedir }}"
+#     mode: +x
+#     remote_src: yes
+#   with_items:
+#     - { filename: heketi, filedir: /usr/local/bin/ }
+#     - { filename: heketi-cli, filedir: /usr/local/bin/ }
+#   when: inventory_hostname == 'gluster-s1'
+
+
+- name: copy heketi.json and heketi-cli to /etc/heketi
+  copy:
+    src: "{{ role_directory }}/{{ item.filename }}"
+    dest: "{{ item.filedir }}"
+    remote_src: no
+  with_items:
+    - { filename: heketi.json, filedir: /etc/heketi/ }
+    - { filename: heketi.service, filedir: /etc/systemd/system/ }
+  when: inventory_hostname == 'gluster-s1'
+
+
+
+- name: Ensure group "heketi" exists
+  group:
+    name: heketi
+    state: present
+  when: inventory_hostname == 'gluster-s1'
+
+
+- name: Added a heketi user
+  user:
+    name: heketi
+    shell: /sbin/nologin
+    groups: heketi
+  when: inventory_hostname == 'gluster-s1'
+
+
+- name: disable selinux
+  selinux:
+    state: disabled
+  when: inventory_hostname == 'gluster-s1'
+
+
+- name: ensure selinux is set to enforcing module
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX=disabled$'
+    line: SELINUX=permissive
+  when: inventory_hostname == 'gluster-s1'
+
+
+- name: download heketi binary
+  get_url:
+    url: "{{ DOWNLOAD_URL_HEKETI_ENV }}"
+    dest: /etc/heketi/heketi.env
+  when: inventory_hostname == 'gluster-s1'    
+
+
+- name: Give insecure permissions to an existing file
+  file:
+    path: "{{ item }}"
+    owner: heketi
+    group: heketi
+    state: directory
+  with_items:
+    - /var/lib/heketi
+    - /var/log/heketi
+    - /etc/heketi
+  when: inventory_hostname == 'gluster-s1'
+
+- name: restart heketi
+  service:
+    name: heketi
+    state: started
+    enabled: yes
+  when: inventory_hostname == 'gluster-s1'
+
