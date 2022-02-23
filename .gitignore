@@ -2,4 +2,6 @@ roles/java/files/jdk-8u221-linux-x64.tar.gz
 
 roles/docker/files/
 
+roles/heketi/files/*.tar.gz
+
 glusterFS_env
