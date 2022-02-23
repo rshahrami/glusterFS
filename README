@@ -1,0 +1,6 @@
+sudo ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
+sudo chown heketi:heketi /etc/heketi/heketi_key*
+
+for i in gluster01 gluster02 gluster03; do
+  ssh-copy-id -i /etc/heketi/heketi_key.pub root@$i
+done
