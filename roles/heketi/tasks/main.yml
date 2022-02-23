@@ -108,3 +108,24 @@
     enabled: yes
   when: inventory_hostname == 'gluster-s1'
 
+
+- name: create ssh-key 
+  shell: ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
+  when: inventory_hostname == 'gluster-s1'
+
+- name: Give insecure permissions to an existing file
+  file:
+    path: "{{ item }}"
+    owner: heketi
+    group: heketi
+    state: file
+  with_items:
+    - /etc/heketi/heketi_key
+    - /etc/heketi/heketi_key.pub
+  when: inventory_hostname == 'gluster-s1'
+
+- name: create ssh-key 
+  shell: ssh-copy-id -i /etc/heketi/heketi_key.pub root@{{ item }}
+  with_items:
+    - kuber-worker1
+  when: inventory_hostname == 'gluster-s1'
