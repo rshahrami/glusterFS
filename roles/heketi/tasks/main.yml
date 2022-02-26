@@ -17,7 +17,7 @@
 
 
 
-# - name: Create {/var/lib,/etc,/var/log}/heketi
+# - name: Create {/var/lib,/etc,/var/log}/heketi directory  
 #   file:
 #     path: "{{ item }}"
 #     state: directory
@@ -41,7 +41,7 @@
 #   when: inventory_hostname == 'gluster-s1'
 
 
-- name: copy heketi.json and heketi-cli to /etc/heketi
+- name: copy heketi.json to /etc/heketi
   copy:
     src: "{{ role_directory }}/{{ item.filename }}"
     dest: "{{ item.filedir }}"
@@ -52,7 +52,7 @@
   when: inventory_hostname == 'gluster-s1'
 
 
-
+# Add heketi system user
 - name: Ensure group "heketi" exists
   group:
     name: heketi
@@ -81,14 +81,14 @@
     line: SELINUX=permissive
   when: inventory_hostname == 'gluster-s1'
 
-
+# download sample environment file for Heketi
 - name: download heketi binary
   get_url:
     url: "{{ DOWNLOAD_URL_HEKETI_ENV }}"
     dest: /etc/heketi/heketi.env
   when: inventory_hostname == 'gluster-s1'    
 
-
+# Set all directory permissions
 - name: Give insecure permissions to an existing file
   file:
     path: "{{ item }}"
@@ -101,6 +101,7 @@
     - /etc/heketi
   when: inventory_hostname == 'gluster-s1'
 
+# Then reload Systemd and start Heketi service
 - name: restart heketi
   service:
     name: heketi
@@ -109,23 +110,39 @@
   when: inventory_hostname == 'gluster-s1'
 
 
-- name: create ssh-key 
-  shell: ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
+# - name: create ssh-key 
+#   shell: ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
+#   when: inventory_hostname == 'gluster-s1'
+
+# - name: Give insecure permissions to an existing file
+#   file:
+#     path: "{{ item }}"
+#     owner: heketi
+#     group: heketi
+#     state: file
+#   with_items:
+#     - /etc/heketi/heketi_key
+#     - /etc/heketi/heketi_key.pub
+#   when: inventory_hostname == 'gluster-s1'
+
+# - name: create ssh-key 
+#   shell: ssh-copy-id -i /etc/heketi/heketi_key.pub root@{{ item }}
+#   with_items:
+#     - kuber-worker1
+#   when: inventory_hostname == 'gluster-s1'
+
+
+
+# Add the Heketi access credentials to your ~/.bashrc file
+- name: export 
+  shell: |
+    cat <<EOF | sudo tee -a /root/.bashrc
+    export HEKETI_CLI_USER=admin
+    export HEKETI_CLI_KEY="12345"
+    EOF
   when: inventory_hostname == 'gluster-s1'
 
-- name: Give insecure permissions to an existing file
-  file:
-    path: "{{ item }}"
-    owner: heketi
-    group: heketi
-    state: file
-  with_items:
-    - /etc/heketi/heketi_key
-    - /etc/heketi/heketi_key.pub
-  when: inventory_hostname == 'gluster-s1'
 
-- name: create ssh-key 
-  shell: ssh-copy-id -i /etc/heketi/heketi_key.pub root@{{ item }}
-  with_items:
-    - kuber-worker1
+- name: export 
+  shell: source /root/.bashrc
   when: inventory_hostname == 'gluster-s1'

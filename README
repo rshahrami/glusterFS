@@ -1,6 +1,63 @@
+###########################################  create volume  ###############################
+server(gluster-s1)
+gluster peer probe gluster-s2
+gluster peer status
+
+
+server(gluster-s1)
+gluster volume create < volume name > replica 2 gluster-s1:/gluster/brick1 gluster-s2:/gluster/brick1 force
+gluster volume list
+gluster volume info
+gluster volume start < volume name >
+gluster volume status
+
+
+clients(gluster-c1 and ...)
+mount -t glusterfs gluster-s1:< volume name >  < directory in client machine >
+
+##########################################  ssh for heketi  ##############################
 sudo ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
 sudo chown heketi:heketi /etc/heketi/heketi_key*
 
 for i in gluster01 gluster02 gluster03; do
   ssh-copy-id -i /etc/heketi/heketi_key.pub root@$i
 done
+
+
+#########################################  work with heketi  #############################
+(heketi node)
+heketi-cli cluster create
+heketi-cli cluster list
+
+# for two node
+heketi-cli node add --zone=1 --cluster=<cluster id from heketi-cli cluster list> \
+      --management-host-name=<gluster-s1> \
+      --storage-host-name=<gluster-s1>
+
+heketi-cli node add --zone=1 --cluster=<cluster id from heketi-cli cluster list> \
+      --management-host-name=<gluster-s2> \
+      --storage-host-name=<gluster-s2>
+
+heketi-cli node list
+
+#for two node
+heketi-cli device add \
+      --name=/dev/sdb \
+      --node=<node id from heketi-cli node list>
+
+heketi-cli device add \
+      --name=/dev/sdb \
+      --node=<node id from heketi-cli node list>
+
+# size of volume example --->  --size=100 ---> the 100 GiB of volume
+heketi-cli volume create --size=<size of volume> --replica=<number of replica>
+
+
+# in client machin for mount volume
+mount -t glusterfs -o <'Mount Options' field from <heketi-cli volume info <'id from heketi-cli volume list'>>> \
+      <'Mount' field from <heketi-cli volume info <'id from heketi-cli volume list'>>> \
+      < directory in client machine >
+
+
+
+
