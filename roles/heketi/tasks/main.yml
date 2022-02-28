@@ -1,44 +1,44 @@
 ---
 # tasks file for heketi
 
-# - name: download heketi binary
-#   local_action:
-#     module: get_url
-#     url: "{{ url_heketi }}"
-#     dest: "{{ role_directory }}"
+- name: download heketi binary
+  local_action:
+    module: get_url
+    url: "{{ url_heketi }}"
+    dest: "{{ role_directory }}"
 
 
-# - name: Unarchive heketi file that is already on the remote machine
-#   unarchive:
-#     src: "{{ role_directory }}/{{ HEKETI_VER }}"
-#     dest: /root
-#     remote_src: no
-#   when: inventory_hostname == 'gluster-s1'
-
-
-
-# - name: Create {/var/lib,/etc,/var/log}/heketi directory  
-#   file:
-#     path: "{{ item }}"
-#     state: directory
-#   with_items:
-#     - /var/lib/heketi
-#     - /etc/heketi
-#     - /var/log/heketi
-#   when: inventory_hostname == 'gluster-s1'
+- name: Unarchive heketi file that is already on the remote machine
+  unarchive:
+    src: "{{ role_directory }}/{{ HEKETI_VER }}"
+    dest: /root
+    remote_src: no
+  when: inventory_hostname == 'gluster-s1'
 
 
 
-# - name: copy heketi and heketi-cli to /use/local/bin/
-#   copy:
-#     src: "/root/heketi/{{ item.filename }}"
-#     dest: "{{ item.filedir }}"
-#     mode: +x
-#     remote_src: yes
-#   with_items:
-#     - { filename: heketi, filedir: /usr/local/bin/ }
-#     - { filename: heketi-cli, filedir: /usr/local/bin/ }
-#   when: inventory_hostname == 'gluster-s1'
+- name: Create {/var/lib,/etc,/var/log}/heketi directory  
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /var/lib/heketi
+    - /etc/heketi
+    - /var/log/heketi
+  when: inventory_hostname == 'gluster-s1'
+
+
+
+- name: copy heketi and heketi-cli to /use/local/bin/
+  copy:
+    src: "/root/heketi/{{ item.filename }}"
+    dest: "{{ item.filedir }}"
+    mode: +x
+    remote_src: yes
+  with_items:
+    - { filename: heketi, filedir: /usr/local/bin/ }
+    - { filename: heketi-cli, filedir: /usr/local/bin/ }
+  when: inventory_hostname == 'gluster-s1'
 
 
 - name: copy heketi.json to /etc/heketi
@@ -110,35 +110,12 @@
   when: inventory_hostname == 'gluster-s1'
 
 
-# - name: create ssh-key 
-#   shell: ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
-#   when: inventory_hostname == 'gluster-s1'
-
-# - name: Give insecure permissions to an existing file
-#   file:
-#     path: "{{ item }}"
-#     owner: heketi
-#     group: heketi
-#     state: file
-#   with_items:
-#     - /etc/heketi/heketi_key
-#     - /etc/heketi/heketi_key.pub
-#   when: inventory_hostname == 'gluster-s1'
-
-# - name: create ssh-key 
-#   shell: ssh-copy-id -i /etc/heketi/heketi_key.pub root@{{ item }}
-#   with_items:
-#     - kuber-worker1
-#   when: inventory_hostname == 'gluster-s1'
-
-
-
 # Add the Heketi access credentials to your ~/.bashrc file
 - name: export 
   shell: |
     cat <<EOF | sudo tee -a /root/.bashrc
     export HEKETI_CLI_USER=admin
-    export HEKETI_CLI_KEY="12345"
+    export HEKETI_CLI_KEY="secretpassword"
     EOF
   when: inventory_hostname == 'gluster-s1'
 
