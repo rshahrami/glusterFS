@@ -19,11 +19,12 @@ mount -t glusterfs gluster-s1:< volume name >  < directory in client machine >
 sudo ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
 sudo chown heketi:heketi /etc/heketi/heketi_key*
 
-for i in gluster01 gluster02 gluster03; do
+for i in gluster-s1 gluster-s2 gluster-s3; do
   ssh-copy-id -i /etc/heketi/heketi_key.pub root@$i
 done
 
-
+# check heketi ssh
+ssh -i /etc/heketi/heketi_key root@gluster-s1
 #########################################  work with heketi  #############################
 (heketi node)
 heketi-cli cluster create
