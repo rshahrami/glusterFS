@@ -36,8 +36,8 @@ heketi-cli node add --zone=1 --cluster=<cluster id from heketi-cli cluster list>
       --storage-host-name=<gluster-s1>
 
 heketi-cli node add --zone=1 --cluster=<cluster id from heketi-cli cluster list> \
-      --management-host-name=<gluster-s2> \
-      --storage-host-name=<gluster-s2>
+      --management-host-name=<gluster-s2  or ip address> \
+      --storage-host-name=<gluster-s2 or ip address>
 
 heketi-cli node list
 
